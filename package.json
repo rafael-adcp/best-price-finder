@@ -10,10 +10,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "billboard.js": "^1.10.2",
+    "bootstrap": "^4.3.1",
+    "d3": "^5.14.1",
     "eslint": "^6.6.0",
+    "handlebars": "^4.5.3",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "uuid": "^3.3.3",
-    "yargs": "^14.2.0"
+    "yargs": "^14.2.2"
   }
 }

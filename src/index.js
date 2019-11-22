@@ -2,21 +2,43 @@ const moment = require('moment');
 const fs = require('fs');
 const GeneticAlgorithm = require('./lib/GeneticAlgorithm');
 const uuid = require('uuid/v1');
+const argv = require('yargs').argv
+
+function calculatePossiblePermutations(dataSet) {
+    let permutations = 1;
+    for (var item in dataSet) {
+        permutations = permutations * dataSet[item].length;
+    }
+    return permutations;
+}
 
 function readOriginalSet() {
-    return JSON.parse(fs.readFileSync('../inputs/basic_sample.json').toString());
-    //return JSON.parse(fs.readFileSync('../inputs/basic_sample.json').toString())
+    //return JSON.parse(fs.readFileSync('../inputs/input_01.json').toString());
+    return JSON.parse(fs.readFileSync('../inputs/base_poc.json').toString())
 }
 
 const totalPolutationToGenerate = 10000; //TODO: read from cli param
-const maximumGenerationsToGenerate = 100; //TODO: read from CLI
+const maximumGenerationsToGenerate = 1000; //TODO: read from CLI
+if(!argv.fileName){
+    throw new Error('Parameter --fileName is missing')
+}
+const fileName = argv.fileName;
 
 //the set only need to be read once since it wont change at all
 const originalDataset = readOriginalSet();
 
 //todo: read \/ from cli param?
 let bestPrice = Number.MAX_SAFE_INTEGER; //assigning some huge big number
-for (var testRound = 0; testRound <= 1000; testRound++) {
+
+console.log(`TOTAL:
+    population to generate: ${totalPolutationToGenerate}
+    available permutations: ${calculatePossiblePermutations(originalDataset)}
+    maximum generations: ${maximumGenerationsToGenerate}`
+);
+
+var outputs = [];
+const testTime = moment();
+for (var testRound = 0; testRound <= 100; testRound++) {
     var startTime = moment();
     const geneticAlgorithm = new GeneticAlgorithm();
     let currentPopulationBestPrice;
@@ -25,32 +47,38 @@ for (var testRound = 0; testRound <= 1000; testRound++) {
     geneticAlgorithm.init(
         originalDataset,
         totalPolutationToGenerate,
-        maximumGenerationsToGenerate);
-    // console.log(
-    //     `
-    // TOTAL:
-    //     population to generate: ${totalPolutationToGenerate}
-    //     available permutations: ${geneticAlgorithm.calculatePossiblePermutations()}
-    //     maximum generations: ${geneticAlgorithm.maximumGenerations}`
-    // )
+        maximumGenerationsToGenerate,
+        `testRound_${fileName}_${testRound}`);
 
     let result;
     try {
         result = geneticAlgorithm.start();
         currentPopulationBestPrice = JSON.parse(result).price;
+        outputs.push(currentPopulationBestPrice);
         if (currentPopulationBestPrice <= bestPrice) {
-            console.log(`found a new best price, changing from ${bestPrice} to ${currentPopulationBestPrice}`);
+            //console.log(`found a new best price, changing from ${bestPrice} to ${currentPopulationBestPrice}\n\n`);
+            let calculated = geneticAlgorithm.calculateFitness(JSON.parse(result).cart);
+            if (calculated != currentPopulationBestPrice) {
+                console.log(calculated)
+                console.log(bestPrice)
+                throw new Error('womp whomp')
+            }
             bestPrice = currentPopulationBestPrice;
-            fs.writeFileSync(`output_${currentPopulationBestPrice}_${uuid()}.json`, result);
+            //console.log(result);
+            //instead of writing a file each time, store into a variable and write it on HERE
+            // fs.writeFileSync(`output_${currentPopulationBestPrice}_${uuid()}.json`, result);
         }
     } catch (e) {
-        console.log('#########################');
-        console.log('#########################');
         console.log('#########################');
         console.log('something weird happend');
         console.log(e);
         console.log(result);
+        console.log('#########################');
     } finally {
+        //HERE> just write the file with the best output ONCE
         console.log(`took: ${moment().diff(startTime, 'seconds', true)} seconds`);
     }
 }
+
+fs.writeFileSync(`output_best_finding_per_testRound_${fileName}.json`, outputs);
+console.log(`total run took: ${moment().diff(testTime, 'seconds', true)} seconds`);

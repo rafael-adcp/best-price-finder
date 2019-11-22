@@ -1,13 +1,16 @@
 const _ = require('lodash');
+const fs = require('fs');
 
 module.exports = class GeneticAlgorithm {
-    init(dataSet, populationNumber, maximumGenerations) {
+    init(dataSet, populationNumber, maximumGenerations, name) {
         this.dataSet = dataSet;
         this.populationNumber = populationNumber;
         this.population = [];
         this.maximumGenerations = maximumGenerations;
         this.highLanders = [];
         this.bestHighLanderFitness = Number.MAX_SAFE_INTEGER;
+        this.metrics = [];
+        this.generationName = name;
     }
 
     generateSubject() {
@@ -46,14 +49,6 @@ module.exports = class GeneticAlgorithm {
         return (shippingPrice * (stores.length)) + _.sum(prices);
     }
 
-    calculatePossiblePermutations() {
-        let permutations = 1;
-        for (var item in this.dataSet) {
-            permutations = permutations * this.dataSet[item].length;
-        }
-        return permutations;
-    }
-
     start() {
         this.generatePopulation();
         var generationsCreated = 0;
@@ -78,22 +73,27 @@ module.exports = class GeneticAlgorithm {
 
             //generating new population
             let newPopulation = [];
+            //inserting highlander into the new population
+            newPopulation.push(currentHighlanders[0])
 
-            newPopulation = _.concat(
-                //inserting highlander into the new population
-                currentHighlanders[0],
-        
+
+            // console.log('doing crossOver 12')
+            newPopulation.push(
                 //crossover first grabbing things from second
-                this.crossOver(currentHighlanders[0], currentHighlanders[1]),
-        
+                this.crossOver(currentHighlanders[0], currentHighlanders[1])
+            )
+
+
+
+            // console.log('doing crossOver 21')
+            newPopulation.push(
                 //crossover second grabbing things from first
-                this.crossOver(currentHighlanders[1], currentHighlanders[0]),
-                newPopulation
+                this.crossOver(currentHighlanders[1], currentHighlanders[0])
             );
 
 
             const subjectsToGenerate = this.populationNumber - newPopulation.length;
-            for (var i = 0; i <= subjectsToGenerate; i++) {
+            for (var i = 1; i <= subjectsToGenerate; i++) {
                 let subject;
                 //making it 50/50 chance to either generate a complete random subject
                 //or to just mutate current highlander
@@ -115,7 +115,7 @@ module.exports = class GeneticAlgorithm {
                         }
                     }
                 } else { // mutating highlander
-                    subject = currentHighlanders[0];
+                    subject = _.cloneDeep(currentHighlanders[0]);
                     //making it 50/50 wether to keep parent attribute or to mutate it
                     for (var item in this.dataSet) {
                         if (_.random(0, 1)) {
@@ -125,7 +125,8 @@ module.exports = class GeneticAlgorithm {
                         }
                     }
                 }
-                newPopulation = _.concat(newPopulation, subject);
+
+                newPopulation.push(subject)
             }
 
             this.population = newPopulation;
@@ -146,28 +147,27 @@ module.exports = class GeneticAlgorithm {
             return o.price;
         });
 
+        fs.writeFileSync(`generated_highlanders_on_${this.generationName}`, this.metrics);
 
         return JSON.stringify(sortedHighLanders[0], null, ' ');
     }
 
     crossOver(originalA, originalB) {
-        var crossOverA;
-        crossOverA = originalA;
-
+        // console.log('\n\nORIGINAL A')
+        // console.log(originalA)
+        // console.log('-------------------------------------------\noriginal B')
+        // console.log(originalB)
+        var crossOverA = _.cloneDeep(originalA);
 
         for (var item in originalA) {
             //witha  50% chance im copying property from B to A
             if (_.random(0, 1)) {
                 //console.log(`will cross over B to A changing ${item} from ${JSON.stringify(crossOverA[item], null, ' ')} to ${JSON.stringify(originalB[item], null, ' ')}`)
-
                 crossOverA[item] = originalB[item];
             }
         }
 
-        // console.log('\n\nORIGINAL A')
-        // console.log(originalA)
-        // console.log('-------------------------------------------\noriginal B')
-        // console.log(originalB)
+
         // console.log('-------------------------------------------\n crossover A')
         // console.log(crossOverA)
         // console.log('-------------------------------------------')
@@ -176,23 +176,26 @@ module.exports = class GeneticAlgorithm {
     }
 
     selectHighLanders(set) {
-        const highLanders = [];
-        //finding 2 best highlanders so that we can mutate it
+        const subjects = [];
+        //finding 2 best subjects so that we can mutate it
         for (var i = 0; i < 2; i++) {
-            highLanders.push(this.population[set[i].position]);
+            subjects.push(this.population[set[i].position]);
         }
 
-        //prevent using memory for worse highlanders
+        this.metrics.push(set[0].price);
+        //prevent using memory for worse subjects
         if (set[0].price <= this.bestHighLanderFitness) {
             // console.log(`found a highlander worse storing, changing from ${this.bestHighLanderFitness} to ${set[0].price}`)
             this.bestHighLanderFitness = set[0].price;
             //saving high lander
-            this.highLanders = _.concat(this.highLanders, {
-                price: set[0].price,
-                cart: this.population[set[0].position]
-            });
-        }
+            this.highLanders.push(
+                {
+                    price: set[0].price,
+                    cart: subjects[0]
+                }
+            )
 
-        return highLanders;
+        }
+        return subjects;
     }
 };

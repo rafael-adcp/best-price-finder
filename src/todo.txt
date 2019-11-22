@@ -1,0 +1,11 @@
+- usar o bunyan com log.debug, log.info, deixar somente com info o start / stop do TODO nao o de cada round
+var bunyan = require('bunyan');
+var log = bunyan.createLogger({
+    name: 'best-price-finder',
+    level: 60,
+    src: true
+});
+
+- receber parametros via cli
+
+- fazer o template receber o grafico e desenhar ele com um for earch ao invez de copia e cola

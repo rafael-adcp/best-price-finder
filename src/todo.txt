@@ -9,3 +9,5 @@ var log = bunyan.createLogger({
 - receber parametros via cli
 
 - fazer o template receber o grafico e desenhar ele com um for earch ao invez de copia e cola
+
+- //todo fazer ele rodar, chamar pra gerar os graficos e depois remover todos os arquivos q ele criou no meio do caminho

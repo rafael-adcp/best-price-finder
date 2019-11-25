@@ -14,10 +14,11 @@ function calculatePossiblePermutations(dataSet) {
 
 function readOriginalSet() {
     //return JSON.parse(fs.readFileSync('../inputs/input_01.json').toString());
-    return JSON.parse(fs.readFileSync('../inputs/base_poc.json').toString())
+    //TODO: receber via cli
+    return JSON.parse(fs.readFileSync('../inputs/input_02.json').toString())
 }
 
-const totalPolutationToGenerate = 10000; //TODO: read from cli param
+const totalPolutationToGenerate = 1000; //TODO: read from cli param
 const maximumGenerationsToGenerate = 1000; //TODO: read from CLI
 if(!argv.fileName){
     throw new Error('Parameter --fileName is missing')
@@ -35,7 +36,7 @@ console.log(`TOTAL:
     available permutations: ${calculatePossiblePermutations(originalDataset)}
     maximum generations: ${maximumGenerationsToGenerate}`
 );
-
+//todo fazer ele rodar, chamar pra gerar os graficos e depois remover todos os arquivos q ele criou no meio do caminho
 var outputs = [];
 const testTime = moment();
 for (var testRound = 0; testRound <= 100; testRound++) {

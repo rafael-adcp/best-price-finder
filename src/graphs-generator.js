@@ -1,7 +1,11 @@
 const fs = require('fs');
 const _ = require('lodash');
 const files = fs.readdirSync('./');
-const bestFitnessValue = 210.1044121;
+//const bestFitnessValue = 210.1044121;
+//receber viaCLI
+//const bestFitnessValue = 525.7529436;
+//se receber preenche else 0
+const bestFitnessValue = 0;
 
 
 const highlanderPerGeneration = [];
@@ -40,7 +44,7 @@ var template = handlebars.compile(source);
 console.log(bestValuePerTestRound)
 var outputString = template(
     {
-        highlanderPerGeneration: JSON.stringify(highlanderPerGeneration),
+      highlanderPerGeneration: JSON.stringify(highlanderPerGeneration),
         bestValuePerTestRound: JSON.stringify(bestValuePerTestRound),
         bestFitnessValue
     }

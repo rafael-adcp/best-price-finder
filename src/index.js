@@ -13,9 +13,8 @@ function calculatePossiblePermutations(dataSet) {
 }
 
 function readOriginalSet() {
-    //return JSON.parse(fs.readFileSync('../inputs/input_01.json').toString());
     //TODO: receber via cli
-    return JSON.parse(fs.readFileSync('../inputs/input_02.json').toString())
+    return JSON.parse(fs.readFileSync('../inputs/base_poc.json').toString())
 }
 
 const totalPolutationToGenerate = 1000; //TODO: read from cli param

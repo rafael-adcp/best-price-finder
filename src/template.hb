@@ -34,7 +34,7 @@
                     text: '{{title}}'
                 },
                 tooltip: {
-                    order: 'ASC'
+                    order: 'asc'
                 },
                 grid: {
                     y: {

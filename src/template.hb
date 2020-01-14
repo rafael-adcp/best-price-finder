@@ -33,11 +33,6 @@
                     title: {
                     text: '{{title}}'
                 },
-                axis: {
-                    y: {
-                        min: {{ bestFitnessValue }} -30
-                    }
-                },
                 tooltip: {
                     order: 'ASC'
                 },

@@ -41,9 +41,14 @@ if (!argv.generations) {
     throw new Error('Parameter --generations is missing');
 }
 
+if (!argv.runs) {
+    throw new Error('Parameter --runs is missing');
+}
+
 const totalPolutationToGenerate = argv.population;
 const maximumGenerationsToGenerate = argv.generations;
 const testName = argv.testName;
+const runs = argv.runs;
 
 //the set only need to be read once since it wont change at all
 const originalDataset = readOriginalSet();
@@ -60,7 +65,7 @@ var bestPricePerPopulation = [];
 var highlanders = [];
 
 const testTime = moment();
-for (var testRound = 0; testRound <= 100; testRound++) {
+for (var testRound = 0; testRound <= runs; testRound++) {
     var startTime = moment();
     const geneticAlgorithm = new GeneticAlgorithm();
     let currentPopulationBestPrice;
@@ -108,5 +113,5 @@ highlanders = _.sortBy(highlanders, (o) => { return o.price; })
 fs.writeFileSync(`../output/highlanders_${testName}.json`, JSON.stringify(highlanders, ' ', 2));
 
 console.log(`total run took: ${moment().diff(testTime, 'seconds', true)} seconds`);
-
-execSync('node graphs-generator.js');
+console.log('best highlander found: ' + highlanders[0].price);
+execSync(`node graphs-generator.js ${argv.bestValueSoFar ? "--bestValueSoFar " + argv.bestValueSoFar : ''}`);

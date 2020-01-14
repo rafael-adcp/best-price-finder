@@ -1,7 +1,12 @@
+const argv = require('yargs').argv;
 const fs = require('fs');
 const files = fs.readdirSync('../output');
 
-const bestFitnessValue = 0;
+
+let bestFitnessValue = 0;
+if (argv.bestValueSoFar) {
+    bestFitnessValue = argv.bestValueSoFar;
+}
 
 const highlanderPerGeneration = [];
 const bestValuePerTestRound = [];

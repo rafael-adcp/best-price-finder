@@ -147,7 +147,7 @@ module.exports = class GeneticAlgorithm {
             return o.price;
         });
 
-        fs.writeFileSync(`generated_highlanders_on_${this.generationName}`, this.metrics);
+        fs.writeFileSync(`../output/generated_highlanders_on_${this.generationName}`, this.metrics);
 
         return JSON.stringify(sortedHighLanders[0], null, ' ');
     }

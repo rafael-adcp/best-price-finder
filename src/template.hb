@@ -18,37 +18,40 @@
 </header>
 
 <body>
-            
-                   <div class="row">
+    {{#each graphs}}
+        <div class="row">
         <div class="col-sm-12">
-            <div id="highlanderPerGeneration"></div>
+            <div id="{{id}}"></div>
             <script>
                 var chart = bb.generate({
                     data: {
-                        columns: 
-                            {{{ highlanderPerGeneration }}}      
+                        columns:
+                            {{{ data }}}      
                     },
 
-                    bindto: '#highlanderPerGeneration',
+                bindto: '#{{id}}',
                     title: {
-                        text: 'highlanderPerGeneration'
-                    },
-                                        axis: {
-                        y: {
-                            min: {{bestFitnessValue}}-30
-                        }
-                    },
-                    grid: {
-                        y: {
-                            lines: [
-                                { value: {{bestFitnessValue}}, text: 'Best possible value: ' + {{bestFitnessValue}} },
+                    text: '{{title}}'
+                },
+                axis: {
+                    y: {
+                        min: {{ bestFitnessValue }} -30
+                    }
+                },
+                tooltip: {
+                    order: 'ASC'
+                },
+                grid: {
+                    y: {
+                        lines: [
+                            { value: {{bestFitnessValue}}, text: 'Best possible value: ' + {{bestFitnessValue}} },
                             ]
 
                         }
                     }
                     , legend: {
-                        show: false
-                    }
+                    show: false
+                }
                 });
 
 
@@ -57,52 +60,13 @@
 
         </div>
     </div>
+    {{/each}}
 
 
 
 
 
 
-
-                       <div class="row">
-        <div class="col-sm-12">
-            <div id="bestValuePerTestRound"></div>
-            <script>
-                var chart = bb.generate({
-                    data: {
-                        columns: 
-                            {{{ bestValuePerTestRound }}}      
-                    },
-
-                    bindto: '#bestValuePerTestRound',
-                    title: {
-                        text: 'bestValuePerTestRound'
-                    },
-                    axis: {
-                        y: {
-                            min: {{bestFitnessValue}}-30
-                        }
-                    },
-                    grid: {
-                        y: {
-                            lines: [
-                                { value: {{bestFitnessValue}}, text: 'Best possible value: ' + {{bestFitnessValue}} },
-                            ]
-
-                        }
-                    }
-                    , legend: {
-                        show: false
-                    }
-                });
-
-
-
-            </script>
-
-        </div>
-    </div>
-            
 
 </body>
 

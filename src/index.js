@@ -1,8 +1,19 @@
 const moment = require('moment');
 const fs = require('fs');
 const GeneticAlgorithm = require('./lib/GeneticAlgorithm');
-const uuid = require('uuid/v1');
-const argv = require('yargs').argv
+const argv = require('yargs').argv;
+const _ = require('lodash');
+const execSync = require('child_process').execSync;
+const path = require('path');
+const rimraf = require("rimraf");
+
+console.log('cleaning output directory!')
+const outputPath = path.resolve(__dirname, "../output");
+if (fs.existsSync(outputPath)) {
+    rimraf.sync(outputPath);
+}
+fs.mkdirSync(outputPath);
+
 
 function calculatePossiblePermutations(dataSet) {
     let permutations = 1;
@@ -14,29 +25,40 @@ function calculatePossiblePermutations(dataSet) {
 
 function readOriginalSet() {
     //TODO: receber via cli
-    return JSON.parse(fs.readFileSync('../inputs/base_poc.json').toString())
+    return JSON.parse(fs.readFileSync('../inputs/basic_sample.json').toString());
 }
 
-const totalPolutationToGenerate = 1000; //TODO: read from cli param
-const maximumGenerationsToGenerate = 1000; //TODO: read from CLI
-if(!argv.fileName){
-    throw new Error('Parameter --fileName is missing')
+
+if (!argv.testName) {
+    throw new Error('Parameter --testName is missing');
 }
-const fileName = argv.fileName;
+
+if (!argv.population) {
+    throw new Error('Parameter --population is missing');
+}
+
+if (!argv.generations) {
+    throw new Error('Parameter --generations is missing');
+}
+
+const totalPolutationToGenerate = argv.population;
+const maximumGenerationsToGenerate = argv.generations;
+const testName = argv.testName;
 
 //the set only need to be read once since it wont change at all
 const originalDataset = readOriginalSet();
 
-//todo: read \/ from cli param?
 let bestPrice = Number.MAX_SAFE_INTEGER; //assigning some huge big number
 
 console.log(`TOTAL:
     population to generate: ${totalPolutationToGenerate}
-    available permutations: ${calculatePossiblePermutations(originalDataset)}
-    maximum generations: ${maximumGenerationsToGenerate}`
+    maximum generations: ${maximumGenerationsToGenerate}
+    available permutations: ${calculatePossiblePermutations(originalDataset)}`
 );
-//todo fazer ele rodar, chamar pra gerar os graficos e depois remover todos os arquivos q ele criou no meio do caminho
-var outputs = [];
+
+var bestPricePerPopulation = [];
+var highlanders = [];
+
 const testTime = moment();
 for (var testRound = 0; testRound <= 100; testRound++) {
     var startTime = moment();
@@ -48,15 +70,19 @@ for (var testRound = 0; testRound <= 100; testRound++) {
         originalDataset,
         totalPolutationToGenerate,
         maximumGenerationsToGenerate,
-        `testRound_${fileName}_${testRound}`);
+        `testRound_${testName}_${testRound}`);
 
     let result;
     try {
         result = geneticAlgorithm.start();
         currentPopulationBestPrice = JSON.parse(result).price;
-        outputs.push(currentPopulationBestPrice);
+        bestPricePerPopulation.push(
+            currentPopulationBestPrice
+        );
         if (currentPopulationBestPrice <= bestPrice) {
-            //console.log(`found a new best price, changing from ${bestPrice} to ${currentPopulationBestPrice}\n\n`);
+            // console.log(`found a new best price, changing from ${bestPrice} to ${currentPopulationBestPrice}\n\n`);
+            highlanders.push(JSON.parse(result));
+
             let calculated = geneticAlgorithm.calculateFitness(JSON.parse(result).cart);
             if (calculated != currentPopulationBestPrice) {
                 console.log(calculated)
@@ -64,9 +90,6 @@ for (var testRound = 0; testRound <= 100; testRound++) {
                 throw new Error('womp whomp')
             }
             bestPrice = currentPopulationBestPrice;
-            //console.log(result);
-            //instead of writing a file each time, store into a variable and write it on HERE
-            // fs.writeFileSync(`output_${currentPopulationBestPrice}_${uuid()}.json`, result);
         }
     } catch (e) {
         console.log('#########################');
@@ -75,10 +98,15 @@ for (var testRound = 0; testRound <= 100; testRound++) {
         console.log(result);
         console.log('#########################');
     } finally {
-        //HERE> just write the file with the best output ONCE
         console.log(`took: ${moment().diff(startTime, 'seconds', true)} seconds`);
     }
 }
 
-fs.writeFileSync(`output_best_finding_per_testRound_${fileName}.json`, outputs);
+fs.writeFileSync(`../output/output_best_price_per_population_${testName}.json`, bestPricePerPopulation);
+
+highlanders = _.sortBy(highlanders, (o) => { return o.price; })
+fs.writeFileSync(`../output/highlanders_${testName}.json`, JSON.stringify(highlanders, ' ', 2));
+
 console.log(`total run took: ${moment().diff(testTime, 'seconds', true)} seconds`);
+
+execSync('node graphs-generator.js');

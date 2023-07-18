@@ -41,5 +41,10 @@ Based on a dataset containing items, and their price into different stores with 
 }
 ```
 
+# Running
+```
+node src/index.js --testName test_name --population 500 --generations 100 --runs 10
+```
+
 # Genetic Algorithm Flow
 <image src = "./diagram/flow.png"></image>

@@ -1,6 +1,10 @@
 const argv = require('yargs').argv;
 const fs = require('fs');
-const files = fs.readdirSync('../output');
+const path = require('path');
+
+const files = fs.readdirSync(
+    path.resolve(__dirname, '../output')
+);
 
 
 let bestFitnessValue = 0;
@@ -13,7 +17,10 @@ const bestValuePerTestRound = [];
 console.log(files)
 for (var fileName of files) {
     if (fileName.startsWith('generated') || fileName.startsWith('output_best')) {
-        const content = fs.readFileSync("../output/" + fileName).toString();
+        const content = fs.readFileSync(
+            path.resolve(__dirname, "../output/" + fileName)
+        ).toString();
+
         var data = [];
         data.push(fileName);
         content.split(',').forEach((x) => {
@@ -32,7 +39,7 @@ for (var fileName of files) {
 const handlebars = require('handlebars');
 
 // set up your handlebars template
-var source = fs.readFileSync('template.hb').toString();
+var source = fs.readFileSync(path.resolve(__dirname, './template.hb')).toString();
 
 // compile the template
 var template = handlebars.compile(source);
@@ -56,4 +63,7 @@ var outputString = template({
     ],
 });
 
-fs.writeFileSync('../output/output_graph.html', outputString);
+fs.writeFileSync(
+    path.resolve(__dirname, '../output/output_graph.html'),
+    outputString
+);

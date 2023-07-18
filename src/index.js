@@ -25,7 +25,11 @@ function calculatePossiblePermutations(dataSet) {
 
 function readOriginalSet() {
     //TODO: receber via cli
-    return JSON.parse(fs.readFileSync('../inputs/basic_sample.json').toString());
+    return JSON.parse(
+        fs.readFileSync(
+            path.resolve(__dirname , "../inputs/base_poc.json")
+        ).toString()
+    );
 }
 
 
@@ -107,11 +111,21 @@ for (var testRound = 0; testRound <= runs; testRound++) {
     }
 }
 
-fs.writeFileSync(`../output/output_best_price_per_population_${testName}.json`, bestPricePerPopulation);
+fs.writeFileSync(
+    path.resolve(__dirname, `../output/output_best_price_per_population_${testName}.json`),
+    JSON.stringify(bestPricePerPopulation, null, 2)
+);
 
 highlanders = _.sortBy(highlanders, (o) => { return o.price; })
-fs.writeFileSync(`../output/highlanders_${testName}.json`, JSON.stringify(highlanders, ' ', 2));
+fs.writeFileSync(
+    path.resolve(__dirname, `../output/highlanders_${testName}.json`),
+    JSON.stringify(highlanders, ' ', 2)
+);
 
 console.log(`total run took: ${moment().diff(testTime, 'seconds', true)} seconds`);
 console.log('best highlander found: ' + highlanders[0].price);
-execSync(`node graphs-generator.js ${argv.bestValueSoFar ? "--bestValueSoFar " + argv.bestValueSoFar : ''}`);
+
+const pathForGraphsGenerator = path.resolve(__dirname, "./graphs-generator.js");
+const command = `node "${pathForGraphsGenerator}"${argv.bestValueSoFar ? "--bestValueSoFar " + argv.bestValueSoFar : ''}`;
+console.log('>>'+command+"<<")
+execSync(command);

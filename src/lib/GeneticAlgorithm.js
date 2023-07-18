@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const fs = require('fs');
+const path = require('path');
 
 module.exports = class GeneticAlgorithm {
     init(dataSet, populationNumber, maximumGenerations, name) {
@@ -147,7 +148,9 @@ module.exports = class GeneticAlgorithm {
             return o.price;
         });
 
-        fs.writeFileSync(`../output/generated_highlanders_on_${this.generationName}`, this.metrics);
+        fs.writeFileSync(
+            path.resolve(__dirname,`../../output/generated_highlanders_on_${this.generationName}`), JSON.stringify(this.metrics, null, 2)
+        );
 
         return JSON.stringify(sortedHighLanders[0], null, ' ');
     }

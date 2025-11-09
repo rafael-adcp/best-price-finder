@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js --testName test_name --population 100000 --generations 50 --runs 100 && node src/gerar_carrinho_de_compra.js"
   },
   "keywords": [],
   "author": "",

@@ -89,7 +89,7 @@ for (var testRound = 0; testRound <= runs; testRound++) {
             currentPopulationBestPrice
         );
         if (currentPopulationBestPrice <= bestPrice) {
-            // console.log(`found a new best price, changing from ${bestPrice} to ${currentPopulationBestPrice}\n\n`);
+            console.log(`found a new best price, changing from ${bestPrice} to ${currentPopulationBestPrice}\n\n`);
             highlanders.push(JSON.parse(result));
 
             let calculated = geneticAlgorithm.calculateFitness(JSON.parse(result).cart);

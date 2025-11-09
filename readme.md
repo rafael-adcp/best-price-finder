@@ -43,7 +43,11 @@ Based on a dataset containing items, and their price into different stores with 
 
 # Running
 ```
-node src/index.js --testName test_name --population 500 --generations 100 --runs 10
+npm start will handle it all, but if you want you can call things separetely (refer to package.json for up to data instructions)
+
+but at a high level its essentially
+node src/index.js --testName test_name --population 5000 --generations 1000 --runs 100
+node src/gerar_carrinho_de_compra.js
 ```
 
 # Genetic Algorithm Flow
